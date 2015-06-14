@@ -306,8 +306,7 @@ StreamsRequest::StreamsRequest(QObject *parent) :
 */
 void StreamsRequest::get(const QString &id) {
     if (id.startsWith("http")) {
-        QUrl u(API_URL + "/resolve?url=" + id);
-        setUrl(u);
+        setUrl(API_URL + "/resolve?url=" + id);
     }
     else {
         setUrl(API_URL + "/tracks/" + id);
