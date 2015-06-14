@@ -1,0 +1,27 @@
+Source: qsoundcloud
+Section: libs
+Priority: optional
+Maintainer: Stuart Howarth <showarth@marxoft.co.uk>
+Homepage: http://marxoft.co.uk/projects/qsoundcloud
+Build-Depends: debhelper (>= 5), libqt4-dev
+
+Package: qsoundcloud
+Architecture: armel
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A Qt/C++ library to access the SoundCloud Data API.
+ QSoundCloud provides a series of request classes and data models enabling read/write access to SoundCloud Data API resources. 
+ The library also supports authentication and retrieval of video streams and subtitles. Full documentation is available 
+ at http://marxoft.co.uk/doc/qsoundcloud
+
+Package: qsoundcloud-qml
+Architecture: armel
+Depends: qsoundcloud
+Description: A QML module to access the SoundCloud Data API.
+ QSoundCloud-QML provides a series of QML elements enabling read/write access to SoundCloud Data API resources. The module 
+ also supports authentication and retrieval of video streams and subtitles. Full documentation is available at 
+ http://marxoft.co.uk/doc/qsoundcloud
+ 
+Package: qsoundcloud-dev
+Architecture: armel
+Depends: qsoundcloud
+Description: Header files for the QSoundCloud library

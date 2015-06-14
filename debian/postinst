@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -e /usr/lib/libqsoundcloud.so.1.0.0 ]
+    then
+        ln -s /opt/lib/libqsoundcloud.so.1.0.0 /usr/lib/libqsoundcloud.so.1.0.0
+        ln -s /usr/lib/libqsoundcloud.so.1.0.0 /usr/lib/libqsoundcloud.so
+        ln -s /usr/lib/libqsoundcloud.so.1.0.0 /usr/lib/libqsoundcloud.so.1
+        ln -s /usr/lib/libqsoundcloud.so.1.0.0 /usr/lib/libqsoundcloud.so.1.0
+fi
+
+if [ ! -e  /usr/lib/qt4/imports/QSoundCloud ]
+    then
+        ln -s /opt/lib/qt4/imports/QSoundCloud/ /usr/lib/qt4/imports/
+fi
+
+exit 0

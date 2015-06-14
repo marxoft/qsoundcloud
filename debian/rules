@@ -1,0 +1,69 @@
+#!/usr/bin/make -f
+# Uncomment this to turn on verbose mode.
+# export DH_VERBOSE=1
+export LD_LIBRARY_PATH=$(CURDIR)/lib
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	#qmake
+
+	touch configure-stamp
+
+build: build-stamp
+
+build-stamp: configure-stamp
+	dh_testdir
+	qmake INSTALL_SRC_PREFIX=$(CURDIR)/debian/qsoundcloud/opt INSTALL_QML_PREFIX=$(CURDIR)/debian/qsoundcloud-qml/opt && $(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	qmake && $(MAKE) distclean
+	rm -f build-stamp install-stamp
+	dh_clean
+
+install-src:
+	cd src && $(MAKE) install
+	mkdir -p debian/qsoundcloud-dev/usr/
+	mkdir -p debian/qsoundcloud-dev/opt/lib/
+	mv debian/qsoundcloud/opt/include debian/qsoundcloud-dev/usr/
+	mv debian/qsoundcloud/opt/lib/libqsoundcloud.prl debian/qsoundcloud-dev/opt/lib/
+	dh_testdir
+	dh_testroot
+	dh_install
+	#dh_installdocs
+	#dh_installchangelogs
+	#dh_compress
+	dh_fixperms
+	dh_shlibdeps
+	dh_makeshlibs
+	dh_installdeb
+	dh_gencontrol 
+	dh_md5sums
+	dh_builddeb
+
+install-qml:
+	cd qml && $(MAKE) install
+	dh_testdir
+	dh_testroot
+	dh_install
+	#dh_installdocs
+	#dh_installchangelogs
+	#dh_compress
+	dh_fixperms
+	dh_shlibdeps
+	dh_makeshlibs
+	dh_installdeb
+	dh_gencontrol 
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-independent files here.
+binary-indep: build install-src install-qml
+
+binary-arch:
+
+binary: binary-indep
+.PHONY: build clean binary-arch binary-indep binary configure
