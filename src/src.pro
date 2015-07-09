@@ -53,6 +53,8 @@ symbian {
 
 contains(DEFINES,QSOUNDCLOUD_STATIC_LIBRARY) {
     CONFIG += staticlib
+    headers.path = ../include/qsoundcloud
+    QMAKE_POST_LINK = mkdir -p $$headers.path && cp $$headers.files $$headers.path
 } else {
     CONFIG += create_prl
     INSTALLS += target headers
