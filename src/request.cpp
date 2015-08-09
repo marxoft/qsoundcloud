@@ -780,20 +780,24 @@ QNetworkRequest RequestPrivate::buildRequest(QUrl u, bool authRequired) {
 #if QT_VERSION >= 0x050000
         QUrlQuery query(u);
         
-        if (!accessToken.isEmpty()) {
-            query.addQueryItem("oauth_token", accessToken);
-        }
-        else {
-            query.addQueryItem("client_id", clientId);
-        }
+        if (!query.hasQueryItem("client_id")) {
+            if (!accessToken.isEmpty()) {
+                query.addQueryItem("oauth_token", accessToken);
+            }
+            else {
+                query.addQueryItem("client_id", clientId);
+            }
             
-        u.setQuery(query);
-#else        
-        if (!accessToken.isEmpty()) {
-            u.addQueryItem("oauth_token", accessToken);
+            u.setQuery(query);
         }
-        else {
-            u.addQueryItem("client_id", clientId);
+#else   
+        if (!u.hasQueryItem("client_id")) {
+            if (!accessToken.isEmpty()) {
+                u.addQueryItem("oauth_token", accessToken);
+            }
+            else {
+                u.addQueryItem("client_id", clientId);
+            }
         }
 #endif
     }
