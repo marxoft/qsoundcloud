@@ -60,32 +60,6 @@ inline void addUrlQueryItems(QUrlQuery *query, const QVariantMap &map) {
     }
 }
 
-#else
-inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
-#ifdef QSOUNDCLOUD_DEBUG
-    qDebug() << "addUrlQueryItems:" << url << map;
-#endif
-    QMapIterator<QString, QVariant> iterator(map);
-    QByteArray value;
-    
-    while (iterator.hasNext()) {
-        iterator.next();
-        
-        switch (iterator.value().type()) {
-        case QVariant::String:
-        case QVariant::ByteArray:
-            value = iterator.value().toString().toUtf8();
-            break;
-        default:
-            value = QtJson::Json::serialize(iterator.value());
-            break;
-        }
-        
-        url->addQueryItem(iterator.key(), value);
-    }
-}
-#endif
-
 inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) {
 #ifdef QSOUNDCLOUD_DEBUG
     qDebug() << "addRequestHeaders:" << request->url() << map;
@@ -137,6 +111,92 @@ inline void addPostBody(QString *body, const QVariantMap &map) {
         }
     }
 }
+#else
+inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
+#ifdef QSOUNDCLOUD_DEBUG
+    qDebug() << "addUrlQueryItems:" << url << map;
+#endif
+    QMapIterator<QString, QVariant> iterator(map);
+    QByteArray value;
+    
+    while (iterator.hasNext()) {
+        iterator.next();
+        
+        switch (iterator.value().type()) {
+        case QVariant::String:
+        case QVariant::ByteArray:
+            value = iterator.value().toString().toUtf8();
+            break;
+        case QVariant::Double: // In QtQuick 1.x, integers declared in JS are passed as doubles.
+            value = QByteArray::number(iterator.value().toInt());
+            break;
+        default:
+            value = QtJson::Json::serialize(iterator.value());
+            break;
+        }
+        
+        url->addQueryItem(iterator.key(), value);
+    }
+}
+
+inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) {
+#ifdef QSOUNDCLOUD_DEBUG
+    qDebug() << "addRequestHeaders:" << request->url() << map;
+#endif
+    QMapIterator<QString, QVariant> iterator(map);
+    QByteArray value;
+    
+    while (iterator.hasNext()) {
+        iterator.next();
+        
+        switch (iterator.value().type()) {
+        case QVariant::String:
+        case QVariant::ByteArray:
+            value = iterator.value().toString().toUtf8();
+            break;
+        case QVariant::Double: // In QtQuick 1.x, integers declared in JS are passed as doubles.
+            value = QByteArray::number(iterator.value().toInt());
+            break;
+        default:
+            value = QtJson::Json::serialize(iterator.value());
+            break;
+        }
+        
+        request->setRawHeader(iterator.key().toUtf8(), value);
+    }
+}
+
+inline void addPostBody(QString *body, const QVariantMap &map) {
+#ifdef QSOUNDCLOUD_DEBUG
+    qDebug() << "addPostBody:" << body << map;
+#endif
+    QMapIterator<QString, QVariant> iterator(map);
+    QByteArray value;
+    
+    while (iterator.hasNext()) {
+        iterator.next();
+        
+        switch (iterator.value().type()) {
+        case QVariant::String:
+        case QVariant::ByteArray:
+            value = iterator.value().toString().toUtf8();
+            break;
+        case QVariant::Double: // In QtQuick 1.x, integers declared in JS are passed as doubles.
+            value = QByteArray::number(iterator.value().toInt());
+            break;
+        default:
+            value = QtJson::Json::serialize(iterator.value());
+            break;
+        }
+        
+        body->append(iterator.key() + "=" + value);
+        
+        if (iterator.hasNext()) {
+            body->append("&");
+        }
+    }
+}
+#endif
 
 class RequestPrivate
 {
