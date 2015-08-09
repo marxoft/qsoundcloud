@@ -37,9 +37,6 @@ static const QString GRANT_TYPE_REFRESH("refresh_token");
 static const QString NON_EXPIRING_SCOPE("non-expiring");
 static const QString WILDCARD_SCOPE("*");
 
-// TrackPage
-static const QString TRACK_PAGE_URL("http://player.soundcloud.com/video");
-
 }
 
 #endif // QSOUNDCLOUD_URLS_H
