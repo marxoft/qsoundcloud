@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = texttracks-update
+TARGET = resources-update
 INSTALLS += target
 
 INCLUDEPATH += ../../../src
