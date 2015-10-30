@@ -2,20 +2,20 @@
  * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef QSOUNDCLOUD_REQUEST_P_H
-#define QSOUNDCLOUD_REQUEST_P_H
+#ifndef QSOUNDLCOUD_REQUEST_P_H
+#define QSOUNDLCOUD_REQUEST_P_H
 
 #include "request.h"
 #include "json.h"
@@ -25,7 +25,7 @@
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
 #endif
-#ifdef QSOUNDCLOUD_DEBUG
+#ifdef QSOUNDLCOUD_DEBUG
 #include <QDebug>
 #endif
 
@@ -37,74 +37,65 @@ static const int MAX_REDIRECTS = 8;
 
 #if QT_VERSION >= 0x050000
 inline void addUrlQueryItems(QUrlQuery *query, const QVariantMap &map) {
-#ifdef QSOUNDCLOUD_DEBUG
+#ifdef QSOUNDLCOUD_DEBUG
     qDebug() << "addUrlQueryItems:" << query << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
-    QByteArray value;
-    
+        
     while (iterator.hasNext()) {
         iterator.next();
         
         switch (iterator.value().type()) {
         case QVariant::String:
         case QVariant::ByteArray:
-            value = iterator.value().toString().toUtf8();
+            query->addQueryItem(iterator.key(), iterator.value().toString());
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value());
+            query->addQueryItem(iterator.key(), QtJson::Json::serialize(iterator.value()));
             break;
         }
-        
-        query->addQueryItem(iterator.key(), value);
     }
 }
 
 inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) {
-#ifdef QSOUNDCLOUD_DEBUG
+#ifdef QSOUNDLCOUD_DEBUG
     qDebug() << "addRequestHeaders:" << request->url() << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
-    QByteArray value;
-    
+        
     while (iterator.hasNext()) {
         iterator.next();
         
         switch (iterator.value().type()) {
         case QVariant::String:
         case QVariant::ByteArray:
-            value = iterator.value().toString().toUtf8();
+            request->setRawHeader(iterator.key().toUtf8(), iterator.value().toByteArray());
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value());
+            request->setRawHeader(iterator.key().toUtf8(), QtJson::Json::serialize(iterator.value()));
             break;
         }
-        
-        request->setRawHeader(iterator.key().toUtf8(), value);
     }
 }
 
 inline void addPostBody(QString *body, const QVariantMap &map) {
-#ifdef QSOUNDCLOUD_DEBUG
+#ifdef QSOUNDLCOUD_DEBUG
     qDebug() << "addPostBody:" << body << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
-    QByteArray value;
-    
+        
     while (iterator.hasNext()) {
         iterator.next();
         
         switch (iterator.value().type()) {
         case QVariant::String:
         case QVariant::ByteArray:
-            value = iterator.value().toString().toUtf8();
+            body->append(iterator.key() + "=" + iterator.value().toString());
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value());
+            body->append(iterator.key() + "=" + QtJson::Json::serialize(iterator.value()));
             break;
-        }
-        
-        body->append(iterator.key() + "=" + value);
+        }        
         
         if (iterator.hasNext()) {
             body->append("&");
@@ -113,65 +104,58 @@ inline void addPostBody(QString *body, const QVariantMap &map) {
 }
 #else
 inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
-#ifdef QSOUNDCLOUD_DEBUG
+#ifdef QSOUNDLCOUD_DEBUG
     qDebug() << "addUrlQueryItems:" << url << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
-    QByteArray value;
-    
+        
     while (iterator.hasNext()) {
         iterator.next();
         
         switch (iterator.value().type()) {
         case QVariant::String:
         case QVariant::ByteArray:
-            value = iterator.value().toString().toUtf8();
+            url->addQueryItem(iterator.key(), iterator.value().toString());
             break;
         case QVariant::Double: // In QtQuick 1.x, integers declared in JS are passed as doubles.
-            value = QByteArray::number(iterator.value().toInt());
+            url->addQueryItem(iterator.key(), QString::number(iterator.value().toInt()));
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value());
+            url->addQueryItem(iterator.key(), QtJson::Json::serialize(iterator.value()));
             break;
         }
-        
-        url->addQueryItem(iterator.key(), value);
     }
 }
 
 inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) {
-#ifdef QSOUNDCLOUD_DEBUG
+#ifdef QSOUNDLCOUD_DEBUG
     qDebug() << "addRequestHeaders:" << request->url() << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
-    QByteArray value;
-    
+        
     while (iterator.hasNext()) {
         iterator.next();
         
         switch (iterator.value().type()) {
         case QVariant::String:
         case QVariant::ByteArray:
-            value = iterator.value().toString().toUtf8();
+            request->setRawHeader(iterator.key().toUtf8(), iterator.value().toByteArray());
             break;
         case QVariant::Double: // In QtQuick 1.x, integers declared in JS are passed as doubles.
-            value = QByteArray::number(iterator.value().toInt());
+            request->setRawHeader(iterator.key().toUtf8(), QByteArray::number(iterator.value().toInt()));
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value());
+            request->setRawHeader(iterator.key().toUtf8(), QtJson::Json::serialize(iterator.value()));
             break;
         }
-        
-        request->setRawHeader(iterator.key().toUtf8(), value);
     }
 }
 
 inline void addPostBody(QString *body, const QVariantMap &map) {
-#ifdef QSOUNDCLOUD_DEBUG
+#ifdef QSOUNDLCOUD_DEBUG
     qDebug() << "addPostBody:" << body << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
-    QByteArray value;
     
     while (iterator.hasNext()) {
         iterator.next();
@@ -179,17 +163,15 @@ inline void addPostBody(QString *body, const QVariantMap &map) {
         switch (iterator.value().type()) {
         case QVariant::String:
         case QVariant::ByteArray:
-            value = iterator.value().toString().toUtf8();
+            body->append(iterator.key() + "=" + iterator.value().toString());
             break;
         case QVariant::Double: // In QtQuick 1.x, integers declared in JS are passed as doubles.
-            value = QByteArray::number(iterator.value().toInt());
+            body->append(iterator.key() + "=" + QString::number(iterator.value().toInt()));
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value());
+            body->append(iterator.key() + "=" + QtJson::Json::serialize(iterator.value()));
             break;
-        }
-        
-        body->append(iterator.key() + "=" + value);
+        }        
         
         if (iterator.hasNext()) {
             body->append("&");
@@ -222,9 +204,6 @@ public:
     
     virtual void followRedirect(const QUrl &redirect);
         
-    void refreshAccessToken();
-    void _q_onAccessTokenRefreshed();
-    
     virtual void _q_onReplyFinished();
     
     Request *q_ptr;
@@ -235,10 +214,7 @@ public:
     
     bool ownNetworkAccessManager;
     
-    QString clientId;
-    QString clientSecret;
     QString accessToken;
-    QString refreshToken;
         
     QUrl url;
     
@@ -263,4 +239,4 @@ public:
 
 }
 
-#endif // QSOUNDCLOUD_REQUEST_P_H
+#endif // QSOUNDLCOUD_REQUEST_P_H
