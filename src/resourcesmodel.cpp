@@ -295,7 +295,7 @@ void ResourcesModel::setClientSecret(const QString &secret) {
     
     The access token is required when accessing a resource's protected resources.
     
-    \as ResourcesRequest::accessToken
+    \sa ResourcesRequest::accessToken
 */
 
 /*!
