@@ -159,7 +159,7 @@ void Model::append(const QMap<int, QVariant> &roles) {
 }
 
 /*!
-    \brief Inserts an item before \index using the data in \a roles.
+    \brief Inserts an item before \a index using the data in \a roles.
     
     The item is appended if \a index is invalid.
 */
