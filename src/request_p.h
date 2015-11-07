@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef QSOUNDLCOUD_REQUEST_P_H
-#define QSOUNDLCOUD_REQUEST_P_H
+#ifndef QSOUNDCLOUD_REQUEST_P_H
+#define QSOUNDCLOUD_REQUEST_P_H
 
 #include "request.h"
 #include "json.h"
@@ -25,7 +25,7 @@
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
 #endif
-#ifdef QSOUNDLCOUD_DEBUG
+#ifdef QSOUNDCLOUD_DEBUG
 #include <QDebug>
 #endif
 
@@ -37,7 +37,7 @@ static const int MAX_REDIRECTS = 8;
 
 #if QT_VERSION >= 0x050000
 inline void addUrlQueryItems(QUrlQuery *query, const QVariantMap &map) {
-#ifdef QSOUNDLCOUD_DEBUG
+#ifdef QSOUNDCLOUD_DEBUG
     qDebug() << "addUrlQueryItems:" << query << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
@@ -58,7 +58,7 @@ inline void addUrlQueryItems(QUrlQuery *query, const QVariantMap &map) {
 }
 
 inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) {
-#ifdef QSOUNDLCOUD_DEBUG
+#ifdef QSOUNDCLOUD_DEBUG
     qDebug() << "addRequestHeaders:" << request->url() << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
@@ -79,7 +79,7 @@ inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) 
 }
 
 inline void addPostBody(QString *body, const QVariantMap &map) {
-#ifdef QSOUNDLCOUD_DEBUG
+#ifdef QSOUNDCLOUD_DEBUG
     qDebug() << "addPostBody:" << body << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
@@ -104,7 +104,7 @@ inline void addPostBody(QString *body, const QVariantMap &map) {
 }
 #else
 inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
-#ifdef QSOUNDLCOUD_DEBUG
+#ifdef QSOUNDCLOUD_DEBUG
     qDebug() << "addUrlQueryItems:" << url << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
@@ -128,7 +128,7 @@ inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
 }
 
 inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) {
-#ifdef QSOUNDLCOUD_DEBUG
+#ifdef QSOUNDCLOUD_DEBUG
     qDebug() << "addRequestHeaders:" << request->url() << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
@@ -152,7 +152,7 @@ inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) 
 }
 
 inline void addPostBody(QString *body, const QVariantMap &map) {
-#ifdef QSOUNDLCOUD_DEBUG
+#ifdef QSOUNDCLOUD_DEBUG
     qDebug() << "addPostBody:" << body << map;
 #endif
     QMapIterator<QString, QVariant> iterator(map);
@@ -203,6 +203,9 @@ public:
     virtual QNetworkRequest buildRequest(QUrl u, bool authRequired = true);
     
     virtual void followRedirect(const QUrl &redirect);
+    
+    void refreshAccessToken();
+    void _q_onAccessTokenRefreshed();
         
     virtual void _q_onReplyFinished();
     
@@ -214,7 +217,10 @@ public:
     
     bool ownNetworkAccessManager;
     
+    QString clientId;
+    QString clientSecret;
     QString accessToken;
+    QString refreshToken;
         
     QUrl url;
     
@@ -239,4 +245,4 @@ public:
 
 }
 
-#endif // QSOUNDLCOUD_REQUEST_P_H
+#endif // QSOUNDCLOUD_REQUEST_P_H
