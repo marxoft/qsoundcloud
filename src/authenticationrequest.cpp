@@ -44,8 +44,8 @@ public:
         bool ok;
         setResult(QtJson::Json::parse(reply->readAll(), ok));
         
-        QNetworkReply::NetworkError e = reply->error();
-        QString es = reply->errorString();
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
         reply->deleteLater();
         reply = 0;
     
@@ -150,6 +150,10 @@ void AuthenticationRequest::setScopes(const QStringList &scopes) {
     \brief Submits \a code in exchange for a SoundCloud access token.
 */
 void AuthenticationRequest::exchangeCodeForAccessToken(const QString &code) {
+    if (status() == Loading) {
+        return;
+    }
+    
     setUrl(TOKEN_URL);
     setData(QString("client_id=" + clientId() + "&client_secret=" + clientSecret() + "&grant_type=" + GRANT_TYPE_CODE
                     + "&code=" + code + "&redirect_uri=" + redirectUri()));

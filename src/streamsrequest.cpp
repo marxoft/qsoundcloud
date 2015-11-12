@@ -158,9 +158,9 @@ public:
             }
         }
         
-        QString response = QString::fromUtf8(reply->readAll());
-        QNetworkReply::NetworkError e = reply->error();
-        QString es = reply->errorString();
+        const QString response = QString::fromUtf8(reply->readAll());
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
         reply->deleteLater();
         reply = 0;
         
@@ -305,6 +305,10 @@ StreamsRequest::StreamsRequest(QObject *parent) :
     StreamsRequest will resolve the URL before retrieving the streams.
 */
 void StreamsRequest::get(const QString &id) {
+    if (status() == Loading) {
+        return;
+    }
+    
     if (id.startsWith("http")) {
         setUrl(API_URL + "/resolve?url=" + id);
     }
